@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>{{pagetitle}}</title>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body>
+		{{>content}}
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script src="{{base}}assets/js/searchable.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+
+	<style>
+		body{
+			background-color :#52B6AC ;			
+		}
+	</style>
+
+	<script>
+		{{#isLoginPage}}
+		$(document).ready(initLoginPage);
+		function initLoginPage(){
+			$('#loginButton').click(twitterLogin);
+		}
+		function twitterLogin(){
+			window.location.href = '{{base}}' + 'Welcome/signInWithTwitter';
+		}
+		{{#type}}
+				var type = '{{type}}';
+				if(type == 'loginFailed'){
+					toastr.warning('' ,'Login failed, please try again');					
+				}
+		{{/type}}
+		{{/isLoginPage}}
+	</script>
+</html>

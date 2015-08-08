@@ -1,0 +1,164 @@
+-- MySQL dump 10.13  Distrib 5.6.24, for osx10.6 (x86_64)
+--
+-- Host: localhost    Database: startupftwdb
+-- ------------------------------------------------------
+-- Server version	5.6.24
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comments` (
+  `product_id` int(11) NOT NULL,
+  `comment_id` int(11) NOT NULL,
+  `comment_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `message` varchar(140) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `comment_type` text NOT NULL,
+  `parent_comment_id` int(11) NOT NULL,
+  PRIMARY KEY (`product_id`,`comment_id`),
+  CONSTRAINT `cons` FOREIGN KEY (`product_id`) REFERENCES `product_information` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `comments`
+--
+
+LOCK TABLES `comments` WRITE;
+/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_information`
+--
+
+DROP TABLE IF EXISTS `product_information`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `product_information` (
+  `product_id` int(11) NOT NULL,
+  `owner_id` int(11) NOT NULL,
+  `product_name` varchar(40) NOT NULL,
+  `product_twitter_handle` varchar(20) NOT NULL,
+  `product_tag_ids` varchar(40) NOT NULL,
+  `product_pitch` varchar(140) NOT NULL,
+  `product_url` varchar(256) NOT NULL,
+  PRIMARY KEY (`product_id`,`owner_id`),
+  KEY `product_information_ibfk_1` (`owner_id`),
+  CONSTRAINT `product_information_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_information`
+--
+
+LOCK TABLES `product_information` WRITE;
+/*!40000 ALTER TABLE `product_information` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_information` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_updates`
+--
+
+DROP TABLE IF EXISTS `product_updates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `product_updates` (
+  `product_id` int(11) NOT NULL,
+  `update_type` text NOT NULL,
+  `update_info` text NOT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`product_id`),
+  CONSTRAINT `constraint` FOREIGN KEY (`product_id`) REFERENCES `product_information` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_updates`
+--
+
+LOCK TABLES `product_updates` WRITE;
+/*!40000 ALTER TABLE `product_updates` DISABLE KEYS */;
+/*!40000 ALTER TABLE `product_updates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tags`
+--
+
+DROP TABLE IF EXISTS `tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tags` (
+  `tag_id` int(11) NOT NULL AUTO_INCREMENT,
+  `tag_name` varchar(20) NOT NULL,
+  PRIMARY KEY (`tag_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tags`
+--
+
+LOCK TABLES `tags` WRITE;
+/*!40000 ALTER TABLE `tags` DISABLE KEYS */;
+INSERT INTO `tags` VALUES (1,'BOOKS_AND_REFERENCE'),(2,'BUSINESS'),(3,'COMICS'),(4,'COMMUNICATION'),(5,'EDUCATION'),(6,'ENTERTAINMENT'),(7,'FINANCE'),(8,'HEALTH_AND_FITNESS'),(9,'LIBRARIES_AND_DEMO'),(10,'LIFESTYLE'),(11,'APP_WALLPAPER'),(12,'MEDIA_AND_VIDEO'),(13,'MEDICAL'),(14,'MUSIC_AND_AUDIO'),(15,'NEWS_AND_MAGAZINES'),(16,'PERSONALIZATION'),(17,'PHOTOGRAPHY'),(18,'PRODUCTIVITY'),(19,'SHOPPING'),(20,'SOCIAL'),(21,'SPORTS'),(22,'TOOLS'),(23,'TRANSPORTATION'),(24,'TRAVEL_AND_LOCAL'),(25,'WEATHER'),(26,'APP_WIDGETS');
+/*!40000 ALTER TABLE `tags` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `user_id` int(11) NOT NULL,
+  `user_name` text NOT NULL,
+  `twitter_handle` varchar(20) NOT NULL,
+  `pic_url` varchar(150) DEFAULT NULL,
+  `date_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `follow_tags` varchar(50) NOT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (0,'Anubhav','01_anubhav','https://pbs.twimg.com/profile_images/502491387678302208/941ZzjIR_normal.jpeg','2015-07-11 19:04:05','');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2015-07-12  1:08:15
