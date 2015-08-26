@@ -29,12 +29,12 @@ class Controller_Api extends Controller_REST
   }
 
   private function updateUserProfile($data){
-      if(!isset($data['twitter_handle'])){
-        return array("success" => false , "message" => "cannot run update on an unknown twitter_handle");
+      if(!isset($data['user_id'])){
+        return array("success" => false , "message" => "cannot run update on an without a valid user_id");
       }
 
-      $twitter_handle = $data['twitter_handle'];
-      $user = DB::select()->from('users')->where('twitter_handle' , '=' , $twitter_handle)->execute();
+      $user_id = $data['user_id'];
+      $user = DB::select()->from('users')->where('user_id' , '=' , user_id)->execute();
       if(sizeof($user) > 0){
         //this means we have the user ,and we can edit it
         $update_array = array();
@@ -54,7 +54,7 @@ class Controller_Api extends Controller_REST
           $update_array['product_liked'] = $data['product_liked'];
         }
         try{
-          DB::update("users")->set($update_array)->where("twitter_handle" , "=" , $twitter_handle)->execute();
+          DB::update("users")->set($update_array)->where("user_id" , "=" , $user_id)->execute();
           return json_encode(array("success" => true , "message" => "Update successful"));
         }catch(Exception $e){
           return array("success" => false , "message" => "Something went wrong during the update query command.Please contact developer");
@@ -95,7 +95,7 @@ class Controller_Api extends Controller_REST
     private function getUserTopicList($data){
       $user_id = $data['user_id'];
       $user_tags = DB::select()->from('users')->where("user_id" , "=" , $user_id)->execute()[0]['follow_tags'];
-      $user_tags = explode(':',$user_tags);
+      $user_tags = explode(',',$user_tags);
       $res = array();
       foreach ($user_tags as $key ) {
         $temp = DB::select()->from('tags')->where('tag_id' , '=' , $key)->execute()[0]['tag_name'];
@@ -105,8 +105,8 @@ class Controller_Api extends Controller_REST
     }
 
     private function getUserProfile($data){
-      $twitter_handle = $data['twitter_handle'];
-      $user_details = DB::select()->from('users')->where("twitter_handle" , "=" , $twitter_handle)->execute()[0];
+      $user_id = $data['user_id'];
+      $user_details = DB::select()->from('users')->where("user_id" , "=" , $user_id)->execute()[0];
       echo json_encode($user_details);
     }
 
