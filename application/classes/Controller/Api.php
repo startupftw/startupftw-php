@@ -5,27 +5,140 @@ class Controller_Api extends Controller_REST
   public function action_index(){
       $action = $_GET['action'];
       if($action == 'getTopicList'){
-           $this->getTopicList();
+           echo json_encode($this->getTopicList());
+      }elseif($action == 'getUserTopicList'){
+         echo json_encode($this->getUserTopicList($_GET));
+      }elseif($action == 'getUserProfile'){
+         echo json_encode($this->getUserProfile($_GET));
+      }elseif ($action == 'getUserLikedProductList') {
+          echo json_encode($this->getUserLikedProductList($_GET));
+      }elseif ($action == 'getProduct') {
+            echo json_encode($this->getProduct($_GET));
+      }elseif ($action == 'getProductUpdateByProductId') {
+            echo json_encode($this->getProductUpdateByProductId($_GET));
+      }elseif ($action == 'getAllProducts') {
+            echo json_encode($this->getAllProducts($_GET));
+      }elseif ($action == 'getAllProductsUpdates') {
+            echo json_encode($this->getAllProductsUpdates($_GET));
       }
-      elseif($action == 'getUserTopicList'){
-         $this->getUserTopicList($_GET);
-      }
-      elseif($action == 'getUserProfile'){
-         $this->getUserProfile($_GET);
-      }
-
   }
 
   public function action_create(){
     $action = $_POST['action'];
     if($action == 'updateUserTopicList'){
-        echo $this->updateUserTopicList($_POST);
-    }
-    else if($action == 'addUserProfile'){
-      echo $this->addUserProfile($_POST);
+        echo json_encode($this->updateUserTopicList($_POST));
+    }else if($action == 'addUserProfile'){
+      echo json_encode($this->addUserProfile($_POST));
     }else if($action == 'updateUserProfile'){
-      echo $this->updateUserProfile($_POST);
+      echo json_encode($this->updateUserProfile($_POST));
+    }else if($action == 'addProduct'){
+      echo json_encode($this->addProduct($_POST));
+    }else if($action == 'addProductUpdate'){
+      echo json_encode($this->addProductUpdate($_POST));
     }
+    else if($action == 'addProductUpdate'){
+      echo json_encode($this->addProductUpdate($_POST));
+    }
+  }
+
+  private function getAllProductsUpdates($data){
+    $limit = 10;
+    $offset = 1;
+    if(isset($data['limit'])){
+      $limit = $data['limit'];
+    }
+    if(isset($data['offset'])){
+      $offset = $data['offset'];
+    }
+
+    try{
+      $query = DB::select()->from("product_updates")->order_by('update_time' , 'desc')->limit($limit)->offset($offset)->execute();
+      $res = array();
+      foreach($query as $q){
+        array_push($res , $q);
+      }
+      return array("success"=>true , "data" => $res);
+
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+  }
+  private function getAllProducts($data){
+    $limit = 10;
+    $offset = 1;
+    if(isset($data['limit'])){
+      $limit = $data['limit'];
+    }
+    if(isset($data['offset'])){
+      $offset = $data['offset'];
+    }
+
+    try{
+      $query = DB::select()->from("product_information")->order_by('timestamp' , 'desc')->limit($limit)->offset($offset)->execute();
+      $res = array();
+      foreach($query as $q){
+        array_push($res , $q);
+      }
+      return array("success"=>true , "data" => $res);
+
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+  }
+
+  private function getProductUpdateByProductId($data){
+    try{
+      $query = DB::select()->from("product_updates")->where("product_id" , "=" , $data['product_id'])->order_by('update_time' , 'desc')->execute();
+      $res = array();
+      foreach($query as $q){
+        array_push($res , $q);
+      }
+      return array("success"=>true , "data" => $res);
+    }catch(Exception $e){
+        return array("success" => false , "message" => $e->getMessage());
+    }
+  }
+  private function addProductUpdate($data){
+    $product_id = $data['product_id'];
+
+    try{
+      $query = DB::insert("product_updates" , array("product_id" , "update_type" , "update_info" ))->values(array($data['product_id'] , $data['update_type'] , $data['update_info']))->execute();
+      return array("success" => true , "message" => "update pushed successfully");
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+
+  }
+  private function getProduct($data){
+    $product_id = $data['product_id'];
+
+    $query = DB::select()->from('product_information')->where("product_id" , "=" , $product_id);
+
+    try{
+       return array("success"=>true , "data" => $query->execute()[0]);
+
+    }catch(Database_Exception $e){
+        return array("success" => false , "message" => $e->getMessage());
+    }
+  }
+  private function addProduct($data){
+    //so as this is a new product, it wont be having a product key or anything. Also , I think we will have to map the owner to this product too, right ?
+    //or may be we can have a differnt api call for that......, cool.
+    //soooooo.....
+    $query = DB::insert('product_information', array('owner_id', 'product_name' , 'product_twitter_handle','product_tag_ids' , 'product_pitch' , 'product_url' ,'playstore_url' , 'appstore_url' , 'logo' , 'comment_count' , 'like_count' , 'launch_date'))->values(
+    array($data['owner_id'] , $data['product_name'] , $data['product_twitter_handle'],$data['product_tag_ids'],$data['product_pitch'],$data['product_url'],$data['playstore_url'] , $data['appstore_url'],$data['logo'],$data['comment_count'],$data['like_count'],$data['launch_date']));
+
+    try{
+      $query->execute();
+      return array("success" => true , "message" => "Product Add successful");
+    }catch(Database_Exception $e){
+      return array('success' => false , 'message' => 'Database Exception : ' . $e->getMessage());
+    }catch(Exception $e){
+      return array('success' => false , 'message' => $e->getMessage());
+    }
+
+
+
   }
 
   private function updateUserProfile($data){
@@ -75,7 +188,7 @@ class Controller_Api extends Controller_REST
         $res = array();
         $res['success'] = false;
         $res['message'] = 'User already present , please use update command, to update his profile.';
-        return json_encode($res);
+        return $res;
       }else{
           $query = DB::insert('users', array('email', 'user_name' , 'twitter_handle','pic_url' , 'follow_tags' , 'products_liked'))->values(
           array($data['email'] , $data['user_name'],$data['twitter_handle'],$data['pic_url'],$data['follow_tags'],$data['products_liked']))->execute();
@@ -89,7 +202,7 @@ class Controller_Api extends Controller_REST
     foreach ($res as $key ) {
       $a[$key['tag_id']] = $key['tag_name'];
       }
-      echo json_encode($a);
+      return array("success"=>true , "data" => $a);
     }
 
     private function getUserTopicList($data){
@@ -101,13 +214,13 @@ class Controller_Api extends Controller_REST
         $temp = DB::select()->from('tags')->where('tag_id' , '=' , $key)->execute()[0]['tag_name'];
         array_push($res , $temp);
       }
-      echo json_encode($res);
+      return array("success"=>true , "data" => $res);
     }
 
     private function getUserProfile($data){
       $user_id = $data['user_id'];
       $user_details = DB::select()->from('users')->where("user_id" , "=" , $user_id)->execute()[0];
-      echo json_encode($user_details);
+      return array("success"=>true , "data" => $user_details);
     }
 
     private function updateUserTopicList($data){
@@ -122,6 +235,11 @@ class Controller_Api extends Controller_REST
       }
 
       $res = implode($res , ':');
-      DB::update("users")->set(array("follow_tags" => $res))->where("user_id" , "=" , $user_id)->execute();
+      try{
+        DB::update("users")->set(array("follow_tags" => $res))->where("user_id" , "=" , $user_id)->execute();
+        return array("success" => true , message=>"topic list updated successfully");
+      }catch(Exception $e){
+        return array("success" => false , "message" => $e->getMessage());
+      }
     }
 }
