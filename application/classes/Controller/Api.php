@@ -35,12 +35,30 @@ class Controller_Api extends Controller_REST
       echo json_encode($this->addProduct($_POST));
     }else if($action == 'addProductUpdate'){
       echo json_encode($this->addProductUpdate($_POST));
-    }
-    else if($action == 'addProductUpdate'){
+    }else if($action == 'addProductUpdate'){
       echo json_encode($this->addProductUpdate($_POST));
+    }else if($action == 'incrementProductLikeCount'){
+      echo json_encode($this->incrementProductLikeCount($_POST));
+    }else if($action == 'addComment'){
+      echo json_encode($this->addComment($_POST));
     }
   }
 
+  private function incrementProductLikeCount($data){
+    try{
+      //i neeed , product_id and the user_id, who liked it
+      $count = DB::select()->from('product_information')->where("product_id" , "=" ,$data['product_id'])->execute()[0]['like_count'];
+      $query = DB::update("product_information" )->set(array("like_count" => $count + 1))->where("product_id" , "=" ,$data['product_id'])->execute();
+
+      $products_liked = DB::select()->from('users')->where("user_id" , "=" ,$data['user_id'])->execute()[0]['products_liked'];
+      $products_liked = $products_liked . ',' . $data['product_id'];
+      $query = DB::update("users" )->set(array("products_liked" => $products_liked))->where("user_id" , "=" ,$data['user_id'])->execute();
+
+      return array("success" => true , "message" => "Count increment successfull");
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+  }
   private function getAllProductsUpdates($data){
     $limit = 10;
     $offset = 1;
@@ -63,6 +81,40 @@ class Controller_Api extends Controller_REST
       return array("success" => false , "message" => $e->getMessage());
     }
   }
+
+  private function addComment($data){
+    //will need the following
+    //$product_id
+    //comment_type -> parent or child
+    //if child, then I need parent id too.
+    //user_id, who commented
+
+    //soooo....lets code this thing up sergei
+    try{
+
+    $product_id = $data['product_id'];
+    $user_id = $data['user_id'];
+    $comment_type = $data['comment_type'];
+    if($comment_type == "parent"){
+      //so if its a parent comment, all we have to do is enter it into the DB
+      //so do it then dude!
+
+      $query = DB::insert("comments" , array("product_id" , "message" , "user_id" , "comment_type"))->values(array($data['product_id'],$data['message'],$data['user_id'],$data['comment_type']));
+      $query->execute();
+      return array("success" => true , "message" => "comment posted successfully");
+    }else if($comment_type == "child"){
+      //well else we shall have to insert it aong with the parent id
+      //so... ok..
+      $query = DB::insert("comments" , array("product_id" , "message" , "user_id" , "comment_type" , "parent_comment_id"))->values(array($data['product_id'],$data['message'],$data['user_id'],$data['comment_type'] , $data['parent_comment_id']));
+      $query->execute();
+      return array("success" => true , "message" => "reply posted successfully");
+    }
+  }catch(Exception $e){
+    return array("success" => false , "message" => $e->getMessage());
+  }
+  }
+
+
   private function getAllProducts($data){
     $limit = 10;
     $offset = 1;
