@@ -20,6 +20,10 @@ class Controller_Api extends Controller_REST
             echo json_encode($this->getAllProducts($_GET));
       }elseif ($action == 'getAllProductsUpdates') {
             echo json_encode($this->getAllProductsUpdates($_GET));
+      }elseif ($action == 'getParentCommentsByProduct') {
+            echo json_encode($this->getParentCommentsByProduct($_GET));
+      }elseif ($action == 'getChildCommentsByParentCommentId') {
+            echo json_encode($this->getChildCommentsByParentCommentId($_GET));
       }
   }
 
@@ -44,6 +48,64 @@ class Controller_Api extends Controller_REST
     }
   }
 
+  //this api requires $offset and $limit information
+  //parent_comment_id
+  //offset
+  //limit
+  private function getChildCommentsByParentCommentId($data){
+    try{
+      $limit = 10;
+      $offset = 0;
+
+      if(isset($data['limit'])){
+        $limit = $data['limit'];
+      }
+
+      if(isset($data['offset'])){
+        $offset = $data['offset'];
+      }
+
+      $query = DB::select()->from("comments")->where("parent_comment_id" , "=" , $data['parent_comment_id'])->limit($limit)->offset($offset)->order_by("comment_time" , "desc")->execute();
+
+      $data = array();
+      foreach($query as $q){
+          array_push($data , $q);
+      }
+
+      return array("success" => true , "data" => $data);
+
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+  }
+
+  //this api requires $offset and $limit information
+  private function getParentCommentsByProduct($data){
+    try{
+      $limit = 10;
+      $offset = 0;
+
+      if(isset($data['limit'])){
+        $limit = $data['limit'];
+      }
+
+      if(isset($data['offset'])){
+        $offset = $data['offset'];
+      }
+
+      $query = DB::select()->from("comments")->where("product_id" , "=" , $data['product_id'])->limit($limit)->offset($offset)->order_by("comment_time" , "desc")->execute();
+
+      $data = array();
+      foreach($query as $q){
+          array_push($data , $q);
+      }
+
+      return array("success" => true , "data" => $data);
+
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+  }
   private function incrementProductLikeCount($data){
     try{
       //i neeed , product_id and the user_id, who liked it
