@@ -24,6 +24,8 @@ class Controller_Api extends Controller_REST
             echo json_encode($this->getParentCommentsByProduct($_GET));
       }elseif ($action == 'getChildCommentsByParentCommentId') {
             echo json_encode($this->getChildCommentsByParentCommentId($_GET));
+      }elseif ($action == 'getProductByUser') {
+            echo json_encode($this->getProductByUser($_GET));
       }
   }
 
@@ -46,6 +48,21 @@ class Controller_Api extends Controller_REST
     }else if($action == 'addComment'){
       echo json_encode($this->addComment($_POST));
     }
+  }
+
+  private function getProductByUser($data){
+    try{
+      $owner_id = $data['owner_id'];
+      $query = DB::select()->from('product_information')->where('owner_id' , '=' , $owner_id)->execute();
+      $data = array();
+      foreach($query as $q){
+        array_push($data , $q);
+      }
+      return array("success" => true , "data" => $data);
+    }catch(Exception $e){
+      return array("success" => false , "message" => $e->getMessage());
+    }
+
   }
 
   //this api requires $offset and $limit information
