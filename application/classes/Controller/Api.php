@@ -52,6 +52,7 @@ class Controller_Api extends Controller_REST
   //parent_comment_id
   //offset
   //limit
+
   private function getChildCommentsByParentCommentId($data){
     try{
       $limit = 10;
@@ -163,6 +164,13 @@ class Controller_Api extends Controller_REST
 
       $query = DB::insert("comments" , array("product_id" , "message" , "user_id" , "comment_type"))->values(array($data['product_id'],$data['message'],$data['user_id'],$data['comment_type']));
       $query->execute();
+
+      //also this is the place where I increase the comment count of the product
+
+      $current_comment_count = DB::select()->from("product_information")->where("product_id" , "=" , $product_id)->execute()[0]['comment_count'];
+
+      $update_count_query = DB::update("product_information")->set(array('comment_count' => $current_comment_count + 1))->where("product_id" , "=" , $product_id)->execute();
+
       return array("success" => true , "message" => "comment posted successfully");
     }else if($comment_type == "child"){
       //well else we shall have to insert it aong with the parent id
