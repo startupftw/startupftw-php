@@ -1,6 +1,6 @@
 <?php session_start(); defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Api extends Controller_REST
+class Controller_Api extends Controller
 {
   public function action_index(){
       $action = $_GET['action'];

@@ -6,7 +6,7 @@ define('CONSUMER_KEY', "O7uJUy006LDNH3KmMnWK5P2yM");
 define('CONSUMER_SECRET', "e0IKeDI0glIzIDYuAwHjTwu64I6IuLXyLZz4X0wcg9NSiluh54");
 define('OAUTH_CALLBACK', "http://ftw.com/Welcome/signInComplete");
 
-class Controller_Welcome extends Controller_REST
+class Controller_Welcome extends Controller
 {
 
 	public function before(){
