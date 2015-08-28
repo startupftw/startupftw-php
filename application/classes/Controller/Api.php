@@ -29,7 +29,7 @@ class Controller_Api extends Controller
                 echo json_encode($this->getProductByUser($_GET));
           }
         }catch(Exception $e){
-          return array("success" => false, "message" => $e->getMessage());
+          echo json_encode(array("success" => false, "message" => $e->getMessage()));
         }
   }
 
@@ -52,7 +52,7 @@ class Controller_Api extends Controller
           echo json_encode($this->addComment($_POST));
         }
       }catch(Exception $e){
-        return array("success" => false, "message" => $e->getMessage());
+        echo json_encode(array("success" => false, "message" => $e->getMessage()));
       }
   }
 
