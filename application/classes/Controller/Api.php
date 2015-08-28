@@ -3,51 +3,57 @@
 class Controller_Api extends Controller
 {
   public function action_index(){
-      $action = $_GET['action'];
-      if($action == 'getTopicList'){
-           echo json_encode($this->getTopicList());
-      }elseif($action == 'getUserTopicList'){
-         echo json_encode($this->getUserTopicList($_GET));
-      }elseif($action == 'getUserProfile'){
-         echo json_encode($this->getUserProfile($_GET));
-      }elseif ($action == 'getUserLikedProductList') {
-          echo json_encode($this->getUserLikedProductList($_GET));
-      }elseif ($action == 'getProduct') {
-            echo json_encode($this->getProduct($_GET));
-      }elseif ($action == 'getProductUpdateByProductId') {
-            echo json_encode($this->getProductUpdateByProductId($_GET));
-      }elseif ($action == 'getAllProducts') {
-            echo json_encode($this->getAllProducts($_GET));
-      }elseif ($action == 'getAllProductsUpdates') {
-            echo json_encode($this->getAllProductsUpdates($_GET));
-      }elseif ($action == 'getParentCommentsByProduct') {
-            echo json_encode($this->getParentCommentsByProduct($_GET));
-      }elseif ($action == 'getChildCommentsByParentCommentId') {
-            echo json_encode($this->getChildCommentsByParentCommentId($_GET));
-      }elseif ($action == 'getProductByUser') {
-            echo json_encode($this->getProductByUser($_GET));
-      }
+      try{
+          $action = $_GET['action'];
+          if($action == 'getTopicList'){
+               echo json_encode($this->getTopicList());
+          }elseif($action == 'getUserTopicList'){
+             echo json_encode($this->getUserTopicList($_GET));
+          }elseif($action == 'getUserProfile'){
+             echo json_encode($this->getUserProfile($_GET));
+          }elseif ($action == 'getUserLikedProductList') {
+              echo json_encode($this->getUserLikedProductList($_GET));
+          }elseif ($action == 'getProduct') {
+                echo json_encode($this->getProduct($_GET));
+          }elseif ($action == 'getProductUpdateByProductId') {
+                echo json_encode($this->getProductUpdateByProductId($_GET));
+          }elseif ($action == 'getAllProducts') {
+                echo json_encode($this->getAllProducts($_GET));
+          }elseif ($action == 'getAllProductsUpdates') {
+                echo json_encode($this->getAllProductsUpdates($_GET));
+          }elseif ($action == 'getParentCommentsByProduct') {
+                echo json_encode($this->getParentCommentsByProduct($_GET));
+          }elseif ($action == 'getChildCommentsByParentCommentId') {
+                echo json_encode($this->getChildCommentsByParentCommentId($_GET));
+          }elseif ($action == 'getProductByUser') {
+                echo json_encode($this->getProductByUser($_GET));
+          }
+        }catch(Exception $e){
+          return array("success" => false, "message" => $e->getMessage());
+        }
   }
 
   public function action_create(){
-    $action = $_POST['action'];
-    if($action == 'updateUserTopicList'){
-        echo json_encode($this->updateUserTopicList($_POST));
-    }else if($action == 'addUserProfile'){
-      echo json_encode($this->addUserProfile($_POST));
-    }else if($action == 'updateUserProfile'){
-      echo json_encode($this->updateUserProfile($_POST));
-    }else if($action == 'addProduct'){
-      echo json_encode($this->addProduct($_POST));
-    }else if($action == 'addProductUpdate'){
-      echo json_encode($this->addProductUpdate($_POST));
-    }else if($action == 'addProductUpdate'){
-      echo json_encode($this->addProductUpdate($_POST));
-    }else if($action == 'incrementProductLikeCount'){
-      echo json_encode($this->incrementProductLikeCount($_POST));
-    }else if($action == 'addComment'){
-      echo json_encode($this->addComment($_POST));
-    }
+    try{
+        $action = $_POST['action'];
+        if($action == 'updateUserTopicList'){
+            echo json_encode($this->updateUserTopicList($_POST));
+        }else if($action == 'addUserProfile'){
+          echo json_encode($this->addUserProfile($_POST));
+        }else if($action == 'updateUserProfile'){
+          echo json_encode($this->updateUserProfile($_POST));
+        }else if($action == 'addProduct'){
+          echo json_encode($this->addProduct($_POST));
+        }else if($action == 'addProductUpdate'){
+          echo json_encode($this->addProductUpdate($_POST));
+        }else if($action == 'incrementProductLikeCount'){
+          echo json_encode($this->incrementProductLikeCount($_POST));
+        }else if($action == 'addComment'){
+          echo json_encode($this->addComment($_POST));
+        }
+      }catch(Exception $e){
+        return array("success" => false, "message" => $e->getMessage());
+      }
   }
 
   private function getProductByUser($data){
@@ -265,7 +271,7 @@ class Controller_Api extends Controller
     //or may be we can have a differnt api call for that......, cool.
     //soooooo.....
     $query = DB::insert('product_information', array('owner_id', 'product_name' , 'product_twitter_handle','product_tag_ids' , 'product_pitch' , 'product_url' ,'playstore_url' , 'appstore_url' , 'logo' , 'comment_count' , 'like_count' , 'launch_date'))->values(
-    array($data['owner_id'] , $data['product_name'] , $data['product_twitter_handle'],$data['product_tag_ids'],$data['product_pitch'],$data['product_url'],$data['playstore_url'] , $data['appstore_url'],$data['logo'],$data['comment_count'],$data['like_count'],$data['launch_date']));
+    array($data['owner_id'] , $data['product_name'] , $data['product_twitter_handle'],$data['product_tag_ids'],$data['product_pitch'],$data['product_url'],$data['playstore_url'] , $data['appstore_url'],$data['logo'],$data['comment_count'],0,0));
 
     try{
       $query->execute();
@@ -329,8 +335,8 @@ class Controller_Api extends Controller
         $res['message'] = 'User already present , please use update command, to update his profile.';
         return $res;
       }else{
-          $query = DB::insert('users', array('email', 'user_name' , 'twitter_handle','pic_url' , 'follow_tags' , 'products_liked'))->values(
-          array($data['email'] , $data['user_name'],$data['twitter_handle'],$data['pic_url'],$data['follow_tags'],$data['products_liked']))->execute();
+          $query = DB::insert('users', array('email', 'user_name' , 'twitter_handle','pic_url' , 'follow_tags'))->values(
+          array($data['email'] , $data['user_name'],$data['twitter_handle'],$data['pic_url'],$data['follow_tags']))->execute();
           return array("success" => true , "message" => "User insert successful");
       }
   }
