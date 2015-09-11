@@ -345,7 +345,8 @@ class Controller_Api extends Controller
     $res = DB::select()->from("tags")->execute();
     $a = array();
     foreach ($res as $key ) {
-      $a[$key['tag_id']] = $key['tag_name'];
+//      $a[$key['tag_id']] = $key['tag_name'];
+      array_push($a , array('id' => $key['tag_id'] , 'title' => $key['tag_name'] ));
       }
       return array("success"=>true , "data" => $a);
     }
