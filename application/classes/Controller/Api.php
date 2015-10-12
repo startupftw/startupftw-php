@@ -1,6 +1,6 @@
 <?php session_start(); defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Api extends Controller
+class Controller_Api extends Controller_Rest
 {
   public function action_index(){
       try{
@@ -32,6 +32,8 @@ class Controller_Api extends Controller
           echo json_encode(array("success" => false, "message" => $e->getMessage()));
         }
   }
+
+
 
   public function action_create(){
     try{
