@@ -4,7 +4,7 @@ class Controller_Api extends Controller_Rest
 {
   public function action_index(){
       try{
-          $action = $_GET['action'];
+          $action = $this->_params['action'];
           if($action == 'getTopicList'){
                echo json_encode($this->getTopicList());
           }elseif($action == 'getUserTopicList'){
@@ -37,7 +37,7 @@ class Controller_Api extends Controller_Rest
 
   public function action_create(){
     try{
-        $action = $_POST['action'];
+        $action = $this->_params['action']
         if($action == 'updateUserTopicList'){
             echo json_encode($this->updateUserTopicList($_POST));
         }else if($action == 'addUserProfile'){
