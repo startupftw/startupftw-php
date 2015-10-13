@@ -37,7 +37,7 @@ class Controller_Api extends Controller_Rest
 
   public function action_create(){
     try{
-        $action = $this->_params['action']
+        $action = $this->_params['action'];
         if($action == 'updateUserTopicList'){
             echo json_encode($this->updateUserTopicList($_POST));
         }else if($action == 'addUserProfile'){
